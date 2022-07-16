@@ -209,6 +209,24 @@ __webpack_require__.r(__webpack_exports__);
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "ShowComponent",
+  data: function data() {
+    return {
+      post: null,
+      comments: null,
+      message: null
+    };
+  },
+  mounted: function mounted() {
+    this.getPost();
+  },
+  methods: {
+    getPost: function getPost() {
+      axios.get("/api/post/".concat(2)).then(function (res) {
+        console.log(res.data.data);
+      });
+    },
+    getComments: function getComments() {}
+  },
   components: {
     CommentComponent: _CommentComponent__WEBPACK_IMPORTED_MODULE_0__["default"]
   }

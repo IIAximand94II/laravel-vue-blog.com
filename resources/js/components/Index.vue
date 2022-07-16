@@ -42,6 +42,37 @@ import SidebarComponent from "./sidbar/SidebarComponent";
 export default {
     name: "Index",
     components: {SidebarComponent, MainComponent, FooterComponent, HeaderComponent, },
+
+
+    mounted(){
+        this.$store.dispatch('getToken')
+    },
+
+    data(){
+        return{
+            token_n: null,
+        }
+    },
+
+    computed:{
+
+    },
+
+    methods:{
+        // getToken(){
+        //     this.token = localStorage.getItem('x-csrf-token')
+        //     console.log(this.token)
+        // },
+        //
+        // logout(){
+        //     axios.post('/logout')
+        //     .then(res => {
+        //         localStorage.removeItem('x-csrf-token')
+        //         this.$router.push({name:'main.index'})
+        //         console.log('logout')
+        //     })
+        // }
+    }
 }
 </script>
 

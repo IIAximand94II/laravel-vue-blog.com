@@ -104,6 +104,32 @@
 import CommentComponent from "./CommentComponent";
 export default {
     name: "ShowComponent",
+
+    data(){
+        return{
+            post:null,
+            comments: null,
+            message: null,
+        }
+    },
+
+    mounted() {
+        this.getPost()
+    },
+
+    methods:{
+        getPost(){
+            axios.get(`/api/post/${2}`)
+            .then(res => {
+                console.log(res.data.data)
+            })
+        },
+
+        getComments(){
+
+        }
+    },
+
     components: {CommentComponent}
 }
 </script>

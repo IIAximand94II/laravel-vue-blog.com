@@ -3,6 +3,8 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\Fruit\FruitController;
 use App\Http\Controllers\GetController;
+use App\Http\Controllers\ImageController;
+use App\Http\Controllers\PostController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -23,9 +25,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+//Route::get('/', [\App\Http\Controllers\MainController::class, 'index']);
+
 Route::group(['prefix' => 'post'], function(){
-   //Route::post('/store', [AuthController\])
+    Route::get('/all', [PostController::class, 'index']);
+    Route::post('/', [PostController::class, 'store']);
+    Route::get('/{post}', [PostController::class, 'show']);
+
+    Route::group(['prefix' => 'images'], function(){
+       Route::post('/', [ImageController::class, 'store']);
+    });
 });
+
 /*
 Route::group(['middleware' => 'auth:sanctum'], function(){
    Route::get('/get', [GetController::class, 'index']);

@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class PostTag extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory;
+    //,SoftDeletes;
     protected $guarded = false;
     protected $table = 'post_tags';
 }

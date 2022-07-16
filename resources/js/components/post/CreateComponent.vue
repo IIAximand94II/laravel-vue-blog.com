@@ -6,7 +6,7 @@
                 <!-- Name input -->
                 <div class="form-outline mb-4">
                     <label class="form-label" for="title">Title</label>
-                    <input type="text" id="title" class="form-control" />
+                    <input type="text" id="title" v-model="title" class="form-control" />
                 </div>
 
                 <div class="form-outline mb-4">
@@ -19,22 +19,22 @@
 
                 <div class="form-outline mb-4">
                     <label class="form-label">Catrgoty</label>
-                    <v-select :options="categories"></v-select>
+                    <v-select placeholder="Select category" label="name" v-model="categories.value" :options="categories"></v-select>
                 </div>
 
                 <div class="form-outline mb-4">
                     <label class="form-label" >Content</label>
-                    <vue-editor v-model="content"></vue-editor>
+                    <vue-editor useCustomImageHandler @image-added="handleImageAdded" v-model="content"></vue-editor>
                 </div>
 
                 <div class="form-outline mb-4">
                     <label class="form-label">Tags</label>
-                    <v-select multiple="" :options="tags"></v-select>
+                    <v-select placeholder="Select tag" v-model="tags.value" label="name" multiple :options="tags"></v-select>
                 </div>
 
                 <!-- 2 column grid layout for inline styling -->
                 <div class="row mb-4">
-                    <button type="submit" class="btn btn-primary btn-block">Registration</button>
+                    <button type="submit" @click.prevent="store" class="btn btn-primary btn-block">Registration</button>
                 </div>
 
             </form>
@@ -55,34 +55,76 @@ export default {
             content: null,
             dropzone:null,
             categories: [
-                'Category 1',
-                'Category 2',
-                'Category 3',
-                'Category 4',
+                {name: 'Category 1' , value: 1},
+                {name: 'Category 2' , value: 2},
+                {name: 'Category 3' , value: 3},
+                {name: 'Category 4' , value: 4},
             ],
 
             tags: [
-                'tag 1',
-                'tag 2',
-                'tag 3',
-                'tag 4',
-                'tag 5',
+                {name: 'Tag 1' , value: 1},
+                {name: 'Tag 2' , value: 2},
+                {name: 'Tag 3' , value: 3},
+                {name: 'Tag 4' , value: 4},
             ]
         }
     },
 
     mounted() {
         this.dropzone = new Dropzone(this.$refs.dropzone, {
-            url: 'fd',
+            url: '/api/post',
             maxFiles: 1,
             autoProcessQueue: false,
             addRemoveLinks: true,
         })
     },
+
+    methods:{
+        store(){
+            const data = new FormData()
+            let files = this.dropzone.getAcceptedFiles()
+            files.forEach(file =>{
+                data.append('image', file)
+                //this.dropzone.removeFile()
+            })
+            let tags_id = this.tags.value
+            tags_id.forEach(tag => {
+                data.append('tags[]', tag.value)
+            })
+            data.append('category_id', this.categories.value.value)
+            data.append('title', this.title)
+            data.append('content', this.content)
+
+            axios.post('/api/post', data)
+            .then(res => {
+
+            })
+        },
+
+        handleImageAdded: function(file, Editor, cursorLocation, resetUploader) {
+            let data = new FormData();
+            data.append("image", file);
+
+            axios.post("/api/post/images", data)
+                .then(result => {
+                    const url = result.data.url; // Get url from response
+                    Editor.insertEmbed(cursorLocation, "image", url);
+                    resetUploader();
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        },
+    }
 }
 </script>
 
-<style scoped>
+<style>
+.dz-success-mark,
+.dz-error-mark{
+    display:none;
+}
+
 .dropzone {
     background: grey;
     border-radius: 5px;

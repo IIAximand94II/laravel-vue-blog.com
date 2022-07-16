@@ -60,8 +60,7 @@ export default {
 
     methods:{
         store(){
-            //console.log('creat user')
-            axios.post('/sanctum/csrf-token')
+            axios.post('/sanctum/csrf-cookie')
             .then(response => {
                 axios.post('/register', {
                     login: this.login,
@@ -72,7 +71,8 @@ export default {
                 })
                     .then(res => {
                         console.log(res)
-                        console.log('created user!')
+                        localStorage.setItem('x-csrf-token', res.config.headers['X-XSRF-TOKEN'])
+                        this.$router.push({name:'user.personal'})
                     })
                     .catch(error => {
                         console.log(error)

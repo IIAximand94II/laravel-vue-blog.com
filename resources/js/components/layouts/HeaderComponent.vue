@@ -24,6 +24,9 @@
                             <router-link class="nav-link" :to="{name:'user.registration'}">Registration</router-link>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" @click.prevent="logout" href="#">Logout</a>
+                        </li>
+                        <li class="nav-item">
                             <router-link class="nav-link" :to="{name:'user.personal'}">Personal</router-link>
                         </li>
                     </ul>
@@ -66,7 +69,18 @@
 
 <script>
 export default {
-    name: "HeaderComponent"
+    name: "HeaderComponent",
+
+    methods:{
+        logout(){
+            axios.post('/logout')
+            .then(res => {
+                localStorage.removeItem('x-csrf-token')
+                this.$router.push({name:'main.index'})
+                console.log('logout')
+            })
+        }
+    }
 }
 </script>
 

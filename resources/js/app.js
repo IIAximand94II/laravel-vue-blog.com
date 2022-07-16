@@ -1,5 +1,6 @@
 import Vue from "vue";
 import router from "./router";
+import store from './store/index'
 import Index from './components/Index'
 import HeaderComponent from "./components/layouts/HeaderComponent";
 import FooterComponent from "./components/layouts/FooterComponent";
@@ -43,5 +44,6 @@ const app = new Vue({
 
     router,
     Vue2Editor,
+    store,
 
 })

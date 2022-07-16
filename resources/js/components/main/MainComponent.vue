@@ -134,6 +134,27 @@
 import SidebarComponent from "../sidbar/SidebarComponent";
 export default {
     name: "MainComponent",
+
+    data(){
+        return{
+            posts:null,
+        }
+    },
+
+    mounted() {
+        this.getPosts()
+    },
+
+    methods:{
+        getPosts(){
+            axios.get('/api/post/all')
+            .then(res => {
+                console.log(res)
+                //this.posts = res.data.data
+            })
+        },
+    },
+
     components: {SidebarComponent}
 }
 </script>

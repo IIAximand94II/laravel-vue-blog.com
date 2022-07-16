@@ -30,10 +30,5 @@
         <FooterComponent></FooterComponent>
     </div>
 </body>
-<script>
-    $(document).ready(function() {
-        $('.select-2').select2();
-    });
-</script>
 </html>
 

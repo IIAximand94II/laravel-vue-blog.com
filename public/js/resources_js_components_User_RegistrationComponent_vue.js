@@ -72,8 +72,7 @@ __webpack_require__.r(__webpack_exports__);
     store: function store() {
       var _this = this;
 
-      //console.log('creat user')
-      axios.post('/sanctum/csrf-token').then(function (response) {
+      axios.post('/sanctum/csrf-cookie').then(function (response) {
         axios.post('/register', {
           login: _this.login,
           name: _this.name,
@@ -82,7 +81,11 @@ __webpack_require__.r(__webpack_exports__);
           password_confirmation: _this.password_confirmation
         }).then(function (res) {
           console.log(res);
-          console.log('created user!');
+          localStorage.setItem('x-csrf-token', res.config.headers['X-XSRF-TOKEN']);
+
+          _this.$router.push({
+            name: 'user.personal'
+          });
         })["catch"](function (error) {
           console.log(error);
         });

@@ -65,13 +65,18 @@ __webpack_require__.r(__webpack_exports__);
     login: function login() {
       var _this = this;
 
-      axios.post('/sanctum/csrf-token').then(function (result) {
+      axios.post('/sanctum/csrf-cookie').then(function (result) {
         axios.post('/login', {
           email: _this.email,
           password: _this.password
         }).then(function (res) {
+          localStorage.setItem('x-csrf-token', res.config.headers['X-XSRF-TOKEN']);
+
+          _this.$router.push({
+            name: 'user.personal'
+          });
+
           console.log(res);
-          console.log('login!');
         })["catch"](function (error) {
           console.log(error);
         });
