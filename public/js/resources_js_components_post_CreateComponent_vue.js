@@ -66,32 +66,8 @@ __webpack_require__.r(__webpack_exports__);
       title: null,
       content: null,
       dropzone: null,
-      categories: [{
-        name: 'Category 1',
-        value: 1
-      }, {
-        name: 'Category 2',
-        value: 2
-      }, {
-        name: 'Category 3',
-        value: 3
-      }, {
-        name: 'Category 4',
-        value: 4
-      }],
-      tags: [{
-        name: 'Tag 1',
-        value: 1
-      }, {
-        name: 'Tag 2',
-        value: 2
-      }, {
-        name: 'Tag 3',
-        value: 3
-      }, {
-        name: 'Tag 4',
-        value: 4
-      }]
+      categories: [],
+      tags: []
     };
   },
   mounted: function mounted() {
@@ -101,6 +77,8 @@ __webpack_require__.r(__webpack_exports__);
       autoProcessQueue: false,
       addRemoveLinks: true
     });
+    this.getCategories();
+    this.getTags();
   },
   methods: {
     store: function store() {
@@ -111,9 +89,9 @@ __webpack_require__.r(__webpack_exports__);
       });
       var tags_id = this.tags.value;
       tags_id.forEach(function (tag) {
-        data.append('tags[]', tag.value);
+        data.append('tags[]', tag.id);
       });
-      data.append('category_id', this.categories.value.value);
+      data.append('category_id', this.categories.value.id);
       data.append('title', this.title);
       data.append('content', this.content);
       axios.post('/api/post', data).then(function (res) {});
@@ -128,6 +106,20 @@ __webpack_require__.r(__webpack_exports__);
         resetUploader();
       })["catch"](function (err) {
         console.log(err);
+      });
+    },
+    getCategories: function getCategories() {
+      var _this = this;
+
+      axios.get('/api/category/all').then(function (res) {
+        _this.categories = res.data.data; //console.log(this.categories)
+      });
+    },
+    getTags: function getTags() {
+      var _this2 = this;
+
+      axios.get('/api/tag/all').then(function (res) {
+        _this2.tags = res.data.data; //console.log(this.tags)
       });
     }
   }
@@ -418,12 +410,12 @@ var render = function () {
           "div",
           { staticClass: "form-outline mb-4" },
           [
-            _c("label", { staticClass: "form-label" }, [_vm._v("Catrgoty")]),
+            _c("label", { staticClass: "form-label" }, [_vm._v("Category")]),
             _vm._v(" "),
             _c("v-select", {
               attrs: {
                 placeholder: "Select category",
-                label: "name",
+                label: "title",
                 options: _vm.categories,
               },
               model: {
@@ -468,7 +460,7 @@ var render = function () {
             _c("v-select", {
               attrs: {
                 placeholder: "Select tag",
-                label: "name",
+                label: "title",
                 multiple: "",
                 options: _vm.tags,
               },

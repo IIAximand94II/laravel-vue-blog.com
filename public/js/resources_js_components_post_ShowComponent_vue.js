@@ -87,8 +87,54 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: "CommentComponent"
+  name: "CommentComponent",
+  data: function data() {
+    return {
+      postId: this.$parent.post.id,
+      message: null,
+      comments: []
+    };
+  },
+  mounted: function mounted() {
+    this.getComments();
+  },
+  methods: {
+    getComments: function getComments() {
+      var _this = this;
+
+      axios.get("/api/post/".concat(this.postId, "/comment/")).then(function (res) {
+        //console.log(res.data.data);
+        _this.comments = res.data.data;
+        console.log(_this.comments);
+      });
+    },
+    store: function store() {
+      var _this2 = this;
+
+      axios.post("/api/post/".concat(this.postId, "/comment/"), {
+        message: this.message,
+        parent_id: 0
+      }).then(function (res) {
+        _this2.getComments();
+      });
+    }
+  }
 });
 
 /***/ }),
@@ -162,50 +208,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "ShowComponent",
@@ -221,9 +223,18 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     getPost: function getPost() {
-      axios.get("/api/post/".concat(2)).then(function (res) {
+      var _this = this;
+
+      //console.log(this.$route.params.id)
+      var id = this.$route.params.id;
+      axios.get("/api/post/".concat(id)).then(function (res) {
         console.log(res.data.data);
+        _this.post = res.data.data;
       });
+    },
+    saveBookmarks: function saveBookmarks() {
+      console.log('Save bookmarks');
+      axios.post("/api/post/".concat(this.post.id, "/bookmarks")).then(function (res) {});
     },
     getComments: function getComments() {}
   },
@@ -387,124 +398,205 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", [
+    _c(
+      "section",
+      { staticClass: "border-bottom mb-3" },
+      [
+        _vm._m(0),
+        _vm._v(" "),
+        _vm._m(1),
+        _vm._v(" "),
+        _vm._m(2),
+        _vm._v(" "),
+        _vm._m(3),
+        _vm._v(" "),
+        _vm._l(_vm.comments, function (comment) {
+          return _c("div", { staticClass: "row mb-4" }, [
+            _vm._m(4, true),
+            _vm._v(" "),
+            _c("div", { staticClass: "col-10" }, [
+              _c("p", { staticClass: "mb-2" }, [
+                _c("strong", [_vm._v(_vm._s(comment.author.name))]),
+                _vm._v(" "),
+                _c("small", { staticClass: "fa-pull-right" }, [
+                  _c("i", [_vm._v(_vm._s(comment.date))]),
+                ]),
+              ]),
+              _vm._v(" "),
+              _c("p", { domProps: { innerHTML: _vm._s(comment.message) } }),
+            ]),
+          ])
+        }),
+      ],
+      2
+    ),
+    _vm._v(" "),
+    _c("section", [
+      _vm._m(5),
+      _vm._v(" "),
+      _c("form", [
+        _c("div", { staticClass: "form-outline mb-4" }, [
+          _c(
+            "label",
+            { staticClass: "form-label mb-3", attrs: { for: "form4Example3" } },
+            [_vm._v("You comment")]
+          ),
+          _vm._v(" "),
+          _c("textarea", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.message,
+                expression: "message",
+              },
+            ],
+            staticClass: "form-control",
+            attrs: { id: "form4Example3", rows: "4" },
+            domProps: { value: _vm.message },
+            on: {
+              input: function ($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.message = $event.target.value
+              },
+            },
+          }),
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          {
+            staticClass: "btn btn-primary btn-block mb-4",
+            attrs: { type: "submit" },
+            on: {
+              click: function ($event) {
+                $event.preventDefault()
+                return _vm.store.apply(null, arguments)
+              },
+            },
+          },
+          [_vm._v("\n                Send\n            ")]
+        ),
+      ]),
+    ]),
+  ])
 }
 var staticRenderFns = [
   function () {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("div", [
-      _c("section", { staticClass: "border-bottom mb-3" }, [
-        _c("p", { staticClass: "text-center" }, [
-          _c("strong", [_vm._v("Comments: 3")]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "row mb-4" }, [
-          _c("div", { staticClass: "col-2" }, [
-            _c("img", {
-              staticClass: "img-fluid shadow-1-strong rounded",
-              attrs: {
-                src: "https://mdbootstrap.com/img/Photos/Avatars/img%20(24).jpg",
-                alt: "",
-              },
-            }),
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-10" }, [
-            _c("p", { staticClass: "mb-2" }, [
-              _c("strong", [_vm._v("Marta Dolores")]),
-            ]),
-            _vm._v(" "),
-            _c("p", [
-              _vm._v(
-                "\n                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio est ab iure\n                    inventore dolorum consectetur? Molestiae aperiam atque quasi consequatur aut?\n                    Repellendus alias dolor ad nam, soluta distinctio quis accusantium!\n                "
-              ),
-            ]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "row mb-4" }, [
-          _c("div", { staticClass: "col-2" }, [
-            _c("img", {
-              staticClass: "img-fluid shadow-1-strong rounded",
-              attrs: {
-                src: "https://mdbootstrap.com/img/Photos/Avatars/img%20(25).jpg",
-                alt: "",
-              },
-            }),
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-10" }, [
-            _c("p", { staticClass: "mb-2" }, [
-              _c("strong", [_vm._v("Valeria Groove")]),
-            ]),
-            _vm._v(" "),
-            _c("p", [
-              _vm._v(
-                "\n                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio est ab iure\n                    inventore dolorum consectetur? Molestiae aperiam atque quasi consequatur aut?\n                    Repellendus alias dolor ad nam, soluta distinctio quis accusantium!\n                "
-              ),
-            ]),
-          ]),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "row mb-4" }, [
-          _c("div", { staticClass: "col-2" }, [
-            _c("img", {
-              staticClass: "img-fluid shadow-1-strong rounded",
-              attrs: {
-                src: "https://mdbootstrap.com/img/Photos/Avatars/img%20(26).jpg",
-                alt: "",
-              },
-            }),
-          ]),
-          _vm._v(" "),
-          _c("div", { staticClass: "col-10" }, [
-            _c("p", { staticClass: "mb-2" }, [
-              _c("strong", [_vm._v("Antonia Velez")]),
-            ]),
-            _vm._v(" "),
-            _c("p", [
-              _vm._v(
-                "\n                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio est ab iure\n                    inventore dolorum consectetur? Molestiae aperiam atque quasi consequatur aut?\n                    Repellendus alias dolor ad nam, soluta distinctio quis accusantium!\n                "
-              ),
-            ]),
-          ]),
-        ]),
+    return _c("p", { staticClass: "text-center" }, [
+      _c("strong", [_vm._v("Comments: 3")]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row mb-4" }, [
+      _c("div", { staticClass: "col-2" }, [
+        _c("img", {
+          staticClass: "img-fluid rounded-circle shadow-1-strong rounded",
+          attrs: {
+            src: "https://mdbootstrap.com/img/Photos/Avatars/img%20(24).jpg",
+            alt: "",
+          },
+        }),
       ]),
       _vm._v(" "),
-      _c("section", [
-        _c("p", { staticClass: "text-center" }, [
-          _c("strong", [_vm._v("Leave a reply")]),
+      _c("div", { staticClass: "col-10" }, [
+        _c("p", { staticClass: "mb-2" }, [
+          _c("strong", [_vm._v("Marta Dolores")]),
         ]),
         _vm._v(" "),
-        _c("form", [
-          _c("div", { staticClass: "form-outline mb-4" }, [
-            _c(
-              "label",
-              {
-                staticClass: "form-label mb-3",
-                attrs: { for: "form4Example3" },
-              },
-              [_vm._v("You comment")]
-            ),
-            _vm._v(" "),
-            _c("textarea", {
-              staticClass: "form-control",
-              attrs: { id: "form4Example3", rows: "4" },
-            }),
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-primary btn-block mb-4",
-              attrs: { type: "submit" },
-            },
-            [_vm._v("\n                Send\n            ")]
+        _c("p", [
+          _vm._v(
+            "\n                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio est ab iure\n                    inventore dolorum consectetur? Molestiae aperiam atque quasi consequatur aut?\n                    Repellendus alias dolor ad nam, soluta distinctio quis accusantium!\n                "
           ),
         ]),
       ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row mb-4" }, [
+      _c("div", { staticClass: "col-2" }, [
+        _c("img", {
+          staticClass: "img-fluid rounded-circle shadow-1-strong rounded",
+          attrs: {
+            src: "https://mdbootstrap.com/img/Photos/Avatars/img%20(25).jpg",
+            alt: "",
+          },
+        }),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-10" }, [
+        _c("p", { staticClass: "mb-2" }, [
+          _c("strong", [_vm._v("Valeria Groove")]),
+        ]),
+        _vm._v(" "),
+        _c("p", [
+          _vm._v(
+            "\n                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio est ab iure\n                    inventore dolorum consectetur? Molestiae aperiam atque quasi consequatur aut?\n                    Repellendus alias dolor ad nam, soluta distinctio quis accusantium!\n                "
+          ),
+        ]),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row mb-4" }, [
+      _c("div", { staticClass: "col-2" }, [
+        _c("img", {
+          staticClass: "img-fluid rounded-circle shadow-1-strong rounded",
+          attrs: {
+            src: "https://mdbootstrap.com/img/Photos/Avatars/img%20(26).jpg",
+            alt: "",
+          },
+        }),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-10" }, [
+        _c("p", { staticClass: "mb-2" }, [
+          _c("strong", [_vm._v("Antonia Velez")]),
+        ]),
+        _vm._v(" "),
+        _c("p", [
+          _vm._v(
+            "\n                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio est ab iure\n                    inventore dolorum consectetur? Molestiae aperiam atque quasi consequatur aut?\n                    Repellendus alias dolor ad nam, soluta distinctio quis accusantium!\n                "
+          ),
+        ]),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-2" }, [
+      _c("img", {
+        staticClass: "img-fluid rounded-circle shadow-1-strong rounded",
+        attrs: {
+          src: "https://mdbootstrap.com/img/Photos/Avatars/img%20(26).jpg",
+          alt: "",
+        },
+      }),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("p", { staticClass: "text-center" }, [
+      _c("strong", [_vm._v("Leave a reply")]),
     ])
   },
 ]
@@ -532,9 +624,60 @@ var render = function () {
   return _c(
     "div",
     [
-      _vm._m(0),
+      _c("section", { staticClass: "border-bottom mb-4" }, [
+        _c("img", {
+          staticClass: "img-fluid shadow-2-strong rounded mb-4",
+          attrs: { src: _vm.post.image, alt: "" },
+        }),
+        _vm._v(" "),
+        _c("div", { staticClass: "row align-items-center mb-4" }, [
+          _c(
+            "div",
+            { staticClass: "col-lg-6 text-center text-lg-start mb-3 m-lg-0" },
+            [
+              _c("img", {
+                staticClass: "rounded  rounded-circle shadow-1-strong me-2",
+                attrs: {
+                  src: _vm.post.image,
+                  height: "35",
+                  alt: "",
+                  loading: "lazy",
+                },
+              }),
+              _vm._v(" "),
+              _vm._m(0),
+              _vm._v(" "),
+              _c("a", { staticClass: "text-dark", attrs: { href: "" } }, [
+                _vm._v(_vm._s(_vm.post.author.name)),
+              ]),
+            ]
+          ),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-lg-6 text-center text-lg-end" }, [
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary px-3 me-1",
+                staticStyle: { "background-color": "#0082ca" },
+                attrs: { type: "button" },
+                on: {
+                  click: function ($event) {
+                    $event.preventDefault()
+                    return _vm.saveBookmarks.apply(null, arguments)
+                  },
+                },
+              },
+              [_c("i", { staticClass: "fas fa-bookmark" })]
+            ),
+            _vm._v(" "),
+            _vm._m(1),
+          ]),
+        ]),
+      ]),
       _vm._v(" "),
-      _vm._m(1),
+      _c("section", [
+        _c("div", { domProps: { innerHTML: _vm._s(_vm.post.content) } }),
+      ]),
       _vm._v(" "),
       _vm._m(2),
       _vm._v(" "),
@@ -548,125 +691,21 @@ var staticRenderFns = [
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("section", { staticClass: "border-bottom mb-4" }, [
-      _c("img", {
-        staticClass: "img-fluid shadow-2-strong rounded mb-4",
-        attrs: {
-          src: "https://mdbootstrap.com/img/Photos/Slides/img%20(144).jpg",
-          alt: "",
-        },
-      }),
-      _vm._v(" "),
-      _c("div", { staticClass: "row align-items-center mb-4" }, [
-        _c(
-          "div",
-          { staticClass: "col-lg-6 text-center text-lg-start mb-3 m-lg-0" },
-          [
-            _c("img", {
-              staticClass: "rounded shadow-1-strong me-2",
-              attrs: {
-                src: "https://mdbootstrap.com/img/Photos/Avatars/img (23).jpg",
-                height: "35",
-                alt: "",
-                loading: "lazy",
-              },
-            }),
-            _vm._v(" "),
-            _c("span", [
-              _vm._v(" Published "),
-              _c("u", [_vm._v("15.07.2020")]),
-              _vm._v(" by"),
-            ]),
-            _vm._v(" "),
-            _c("a", { staticClass: "text-dark", attrs: { href: "" } }, [
-              _vm._v("Anna Maria Doe"),
-            ]),
-          ]
-        ),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-lg-6 text-center text-lg-end" }, [
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-primary px-3 me-1",
-              staticStyle: { "background-color": "#0082ca" },
-              attrs: { type: "button" },
-            },
-            [_c("i", { staticClass: "fas fa-bookmark" })]
-          ),
-          _vm._v(" "),
-          _c(
-            "button",
-            {
-              staticClass: "btn btn-primary px-3 me-1",
-              attrs: { type: "button" },
-            },
-            [_c("i", { staticClass: "fas fa-comments" })]
-          ),
-        ]),
-      ]),
+    return _c("span", [
+      _vm._v(" Published "),
+      _c("u", [_vm._v("15.07.2020")]),
+      _vm._v(" by"),
     ])
   },
   function () {
     var _vm = this
     var _h = _vm.$createElement
     var _c = _vm._self._c || _h
-    return _c("section", [
-      _c("p", [
-        _vm._v(
-          "\n            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Optio sapiente molestias\n            consectetur. Fuga nulla officia error placeat veniam, officiis rerum laboriosam\n            ullam molestiae magni velit laborum itaque minima doloribus eligendi! Lorem ipsum,\n            dolor sit amet consectetur adipisicing elit. Optio sapiente molestias consectetur.\n            Fuga nulla officia error placeat veniam, officiis rerum laboriosam ullam molestiae\n            magni velit laborum itaque minima doloribus eligendi!\n        "
-        ),
-      ]),
-      _vm._v(" "),
-      _c("p", [
-        _c("strong", [_vm._v("Optio sapiente molestias consectetur?")]),
-      ]),
-      _vm._v(" "),
-      _c("p", [
-        _vm._v(
-          "\n            Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum architecto ex ab aut\n            tempora officia libero praesentium, sint id magnam eius natus unde blanditiis. Autem\n            adipisci totam sit consequuntur eligendi.\n        "
-        ),
-      ]),
-      _vm._v(" "),
-      _c("p", { staticClass: "note note-light" }, [
-        _c("strong", [_vm._v("Note:")]),
-        _vm._v(
-          " Lorem ipsum dolor sit amet, consectetur adipisicing elit.\n            Optio odit consequatur porro sequi ab distinctio modi. Rerum cum dolores sint,\n            adipisci ad veritatis laborum eaque illum saepe mollitia ut voluptatum.\n        "
-        ),
-      ]),
-      _vm._v(" "),
-      _c("p", [
-        _vm._v(
-          "\n            Lorem ipsum dolor sit amet consectetur adipisicing elit. Temporibus, libero repellat\n            molestiae aperiam laborum aliquid atque magni nostrum, inventore perspiciatis\n            possimus quia incidunt maiores molestias eaque nam commodi! Magnam, labore.\n        "
-        ),
-      ]),
-      _vm._v(" "),
-      _c("img", {
-        staticClass: "img-fluid shadow-1-strong rounded mb-4",
-        attrs: {
-          src: "https://mdbootstrap.com/img/new/slides/041.jpg",
-          alt: "",
-        },
-      }),
-      _vm._v(" "),
-      _c("ul", [
-        _c("li", [_vm._v("Lorem")]),
-        _vm._v(" "),
-        _c("li", [_vm._v("Ipsum")]),
-        _vm._v(" "),
-        _c("li", [_vm._v("Dolor")]),
-        _vm._v(" "),
-        _c("li", [_vm._v("Sit")]),
-        _vm._v(" "),
-        _c("li", [_vm._v("Amet")]),
-      ]),
-      _vm._v(" "),
-      _c("p", [
-        _vm._v(
-          "\n            Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed, temporibus nulla\n            voluptatibus accusantium sapiente doloremque. Doloribus ratione laboriosam culpa. Ab\n            officiis quidem, debitis nostrum in accusantium dolore veritatis eius est?\n        "
-        ),
-      ]),
-    ])
+    return _c(
+      "button",
+      { staticClass: "btn btn-primary px-3 me-1", attrs: { type: "button" } },
+      [_c("i", { staticClass: "fas fa-comments" })]
+    )
   },
   function () {
     var _vm = this

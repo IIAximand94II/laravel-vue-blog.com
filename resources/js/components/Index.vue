@@ -50,7 +50,7 @@ export default {
 
     data(){
         return{
-            token_n: null,
+            token: null,
         }
     },
 

@@ -45,4 +45,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public function posts(){
+        return $this->hasMany(Post::class, 'author', 'id');
+    }
+
+    public function userBookmarks(){
+        return $this->belongsToMany(Post::class, 'post_user_bookmarks', 'user_id', 'post_id');
+    }
+
+    public function comments(){
+        return $this->hasMany(Comment::class, 'author_id', 'id');
+    }
 }

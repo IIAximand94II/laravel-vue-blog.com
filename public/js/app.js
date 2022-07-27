@@ -20456,7 +20456,7 @@ __webpack_require__.r(__webpack_exports__);
   },
   data: function data() {
     return {
-      token_n: null
+      token: null
     };
   },
   computed: {},
@@ -20608,6 +20608,9 @@ __webpack_require__.r(__webpack_exports__);
 //
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "HeaderComponent",
+  mounted: function mounted() {
+    this.log();
+  },
   methods: {
     logout: function logout() {
       var _this = this;
@@ -20621,6 +20624,9 @@ __webpack_require__.r(__webpack_exports__);
 
         console.log('logout');
       });
+    },
+    log: function log() {
+      console.log(this.$parent.token);
     }
   }
 });
@@ -20771,6 +20777,39 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "MainComponent",
@@ -20784,9 +20823,16 @@ __webpack_require__.r(__webpack_exports__);
   },
   methods: {
     getPosts: function getPosts() {
+      var _this = this;
+
       axios.get('/api/post/all').then(function (res) {
-        console.log(res); //this.posts = res.data.data
+        console.log(res.data.data);
+        _this.posts = res.data.data;
       });
+    },
+    saveBookmarks: function saveBookmarks(id) {
+      console.log('Save bookmarks');
+      axios.post("/api/post/".concat(id, "/bookmarks")).then(function (res) {});
     }
   },
   components: {
@@ -20837,24 +20883,34 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: "SidebarComponent"
+  name: "SidebarComponent",
+  data: function data() {
+    return {
+      categories: [],
+      tags: []
+    };
+  },
+  mounted: function mounted() {
+    this.getCategories();
+    this.getTags();
+  },
+  methods: {
+    getCategories: function getCategories() {
+      var _this = this;
+
+      axios.get('/api/category/all').then(function (res) {
+        _this.categories = res.data.data; //console.log(this.categories)
+      });
+    },
+    getTags: function getTags() {
+      var _this2 = this;
+
+      axios.get('/api/tag/all').then(function (res) {
+        _this2.tags = res.data.data; //console.log(this.tags)
+      });
+    }
+  }
 });
 
 /***/ }),
@@ -21004,17 +21060,17 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
     },
     name: 'main.index'
   }, {
-    path: '/blog/category',
+    path: '/category/:id',
     component: function component() {
       return __webpack_require__.e(/*! import() */ "resources_js_components_main_CategoryComponent_vue").then(__webpack_require__.bind(__webpack_require__, /*! ./components/main/CategoryComponent */ "./resources/js/components/main/CategoryComponent.vue"));
     },
-    name: 'main.category'
+    name: 'category.index'
   }, {
-    path: '/blog/tag',
+    path: '/tag/:id',
     component: function component() {
       return __webpack_require__.e(/*! import() */ "resources_js_components_main_TagComponent_vue").then(__webpack_require__.bind(__webpack_require__, /*! ./components/main/TagComponent */ "./resources/js/components/main/TagComponent.vue"));
     },
-    name: 'main.tag'
+    name: 'tag.index'
   }, {
     path: '/post/show',
     component: function component() {
@@ -21052,12 +21108,33 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_1__["default"]({
     },
     name: 'post.edit'
   }, {
-    path: '/post/show',
+    path: '/post/:id',
     component: function component() {
       return __webpack_require__.e(/*! import() */ "resources_js_components_post_ShowComponent_vue").then(__webpack_require__.bind(__webpack_require__, /*! ./components/post/ShowComponent */ "./resources/js/components/post/ShowComponent.vue"));
     },
     name: 'post.show'
   }]
+});
+router.beforeEach(function (to, from, next) {
+  var token = localStorage.getItem('x-csrf-token');
+
+  if (!token) {
+    if (to.name === 'user.login' || to.name === 'user.registration') {
+      return next();
+    } else {
+      return next({
+        name: 'user.login'
+      });
+    }
+  } else {
+    if (to.name === 'user.login' || to.name === 'user.registration' && token) {
+      return next({
+        name: 'user.personal'
+      });
+    }
+  }
+
+  next();
 });
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (router);
 
@@ -58293,14 +58370,16 @@ var render = function () {
                   "li",
                   { staticClass: "nav-item" },
                   [
-                    _c(
-                      "router-link",
-                      {
-                        staticClass: "nav-link",
-                        attrs: { to: { name: "user.login" } },
-                      },
-                      [_vm._v("Login")]
-                    ),
+                    !this.$parent.token
+                      ? _c(
+                          "router-link",
+                          {
+                            staticClass: "nav-link",
+                            attrs: { to: { name: "user.login" } },
+                          },
+                          [_vm._v("Login")]
+                        )
+                      : _vm._e(),
                   ],
                   1
                 ),
@@ -58309,47 +58388,53 @@ var render = function () {
                   "li",
                   { staticClass: "nav-item" },
                   [
-                    _c(
-                      "router-link",
-                      {
-                        staticClass: "nav-link",
-                        attrs: { to: { name: "user.registration" } },
-                      },
-                      [_vm._v("Registration")]
-                    ),
+                    !this.$parent.token
+                      ? _c(
+                          "router-link",
+                          {
+                            staticClass: "nav-link",
+                            attrs: { to: { name: "user.registration" } },
+                          },
+                          [_vm._v("Registration")]
+                        )
+                      : _vm._e(),
                   ],
                   1
                 ),
                 _vm._v(" "),
                 _c("li", { staticClass: "nav-item" }, [
-                  _c(
-                    "a",
-                    {
-                      staticClass: "nav-link",
-                      attrs: { href: "#" },
-                      on: {
-                        click: function ($event) {
-                          $event.preventDefault()
-                          return _vm.logout.apply(null, arguments)
+                  this.$parent.token
+                    ? _c(
+                        "a",
+                        {
+                          staticClass: "nav-link",
+                          attrs: { href: "#" },
+                          on: {
+                            click: function ($event) {
+                              $event.preventDefault()
+                              return _vm.logout.apply(null, arguments)
+                            },
+                          },
                         },
-                      },
-                    },
-                    [_vm._v("Logout")]
-                  ),
+                        [_vm._v("Logout")]
+                      )
+                    : _vm._e(),
                 ]),
                 _vm._v(" "),
                 _c(
                   "li",
                   { staticClass: "nav-item" },
                   [
-                    _c(
-                      "router-link",
-                      {
-                        staticClass: "nav-link",
-                        attrs: { to: { name: "user.personal" } },
-                      },
-                      [_vm._v("Personal")]
-                    ),
+                    this.$parent.token
+                      ? _c(
+                          "router-link",
+                          {
+                            staticClass: "nav-link",
+                            attrs: { to: { name: "user.personal" } },
+                          },
+                          [_vm._v("Personal")]
+                        )
+                      : _vm._e(),
                   ],
                   1
                 ),
@@ -58511,42 +58596,11 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
-}
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("section", [
+  return _c(
+    "section",
+    [
       _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-4 mb-4" }, [
-          _c(
-            "div",
-            {
-              staticClass:
-                "bg-image hover-overlay shadow-1-strong rounded ripple",
-              attrs: { "data-mdb-ripple-color": "light" },
-            },
-            [
-              _c("img", {
-                staticClass: "img-fluid",
-                attrs: {
-                  src: "https://mdbootstrap.com/img/new/standard/nature/184.jpg",
-                },
-              }),
-              _vm._v(" "),
-              _c("a", { attrs: { href: "#!" } }, [
-                _c("div", {
-                  staticClass: "mask",
-                  staticStyle: {
-                    "background-color": "rgba(251, 251, 251, 0.15)",
-                  },
-                }),
-              ]),
-            ]
-          ),
-        ]),
+        _vm._m(0),
         _vm._v(" "),
         _c("div", { staticClass: "col-md-8 mb-4" }, [
           _c("h5", [_vm._v("Very long post title")]),
@@ -58558,180 +58612,367 @@ var staticRenderFns = [
           ]),
           _vm._v(" "),
           _c("div", { staticClass: "row" }, [
-            _c("div", { staticClass: "col-3" }, [
+            _c(
+              "div",
+              { staticClass: "col-3" },
+              [
+                _c(
+                  "router-link",
+                  {
+                    staticClass: "btn btn-primary",
+                    attrs: { to: { path: "/post/11" }, type: "button" },
+                  },
+                  [_vm._v("Read")]
+                ),
+              ],
+              1
+            ),
+            _vm._v(" "),
+            _vm._m(1),
+            _vm._v(" "),
+            _vm._m(2),
+          ]),
+        ]),
+      ]),
+      _vm._v(" "),
+      _vm._m(3),
+      _vm._v(" "),
+      _vm._m(4),
+      _vm._v(" "),
+      _vm._m(5),
+      _vm._v(" "),
+      _vm._l(_vm.posts, function (post) {
+        return _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col-md-4 mb-4" }, [
+            _c(
+              "div",
+              {
+                staticClass:
+                  "bg-image hover-overlay shadow-1-strong rounded ripple",
+                attrs: { "data-mdb-ripple-color": "light" },
+              },
+              [
+                _c("img", {
+                  staticClass: "img-fluid",
+                  attrs: { src: post.preview_image },
+                }),
+                _vm._v(" "),
+                _vm._m(6, true),
+              ]
+            ),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-8 mb-4" }, [
+            _c("h5", [_vm._v(_vm._s(post.title))]),
+            _vm._v(" "),
+            _c("p", { domProps: { innerHTML: _vm._s(post.excerpt) } }),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
               _c(
-                "button",
-                { staticClass: "btn btn-primary", attrs: { type: "button" } },
-                [_vm._v("Read")]
+                "div",
+                { staticClass: "col-3" },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: {
+                        to: { path: "/post/" + post.id },
+                        type: "button",
+                      },
+                    },
+                    [_vm._v("Read")]
+                  ),
+                ],
+                1
               ),
+              _vm._v(" "),
+              _vm._m(7, true),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-3" }, [
+                _c(
+                  "a",
+                  {
+                    attrs: { href: "#" },
+                    on: {
+                      click: function ($event) {
+                        $event.preventDefault()
+                        return _vm.saveBookmarks(post.id)
+                      },
+                    },
+                  },
+                  [
+                    _c("i", {
+                      staticClass: "far fa-bookmark fa-pull-right m-2",
+                    }),
+                  ]
+                ),
+                _vm._v(" "),
+                _vm._m(8, true),
+              ]),
             ]),
+          ]),
+        ])
+      }),
+      _vm._v(" "),
+      _vm._m(9),
+    ],
+    2
+  )
+}
+var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-md-4 mb-4" }, [
+      _c(
+        "div",
+        {
+          staticClass: "bg-image hover-overlay shadow-1-strong rounded ripple",
+          attrs: { "data-mdb-ripple-color": "light" },
+        },
+        [
+          _c("img", {
+            staticClass: "img-fluid",
+            attrs: {
+              src: "https://mdbootstrap.com/img/new/standard/nature/184.jpg",
+            },
+          }),
+          _vm._v(" "),
+          _c("a", { attrs: { href: "#!" } }, [
+            _c("div", {
+              staticClass: "mask",
+              staticStyle: { "background-color": "rgba(251, 251, 251, 0.15)" },
+            }),
+          ]),
+        ]
+      ),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-6 " }, [
+      _c("a", { attrs: { href: "#" } }, [
+        _c("i", { staticClass: "far fa-thumbs-down  fa-pull-right m-2" }),
+      ]),
+      _vm._v(" "),
+      _c("span", { staticClass: " fa-pull-right m-1" }, [_vm._v("1")]),
+      _vm._v(" "),
+      _c("a", { attrs: { href: "#" } }, [
+        _c("i", { staticClass: "far fa-thumbs-up  fa-pull-right m-2" }),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-3" }, [
+      _c("a", { attrs: { href: "#" } }, [
+        _c("i", { staticClass: "far fa-bookmark fa-pull-right m-2" }),
+      ]),
+      _vm._v(" "),
+      _c("a", { attrs: { href: "#" } }, [
+        _c("i", { staticClass: "far fa-comment fa-pull-right m-2" }),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-4 mb-4" }, [
+        _c(
+          "div",
+          {
+            staticClass:
+              "bg-image hover-overlay shadow-1-strong rounded ripple",
+            attrs: { "data-mdb-ripple-color": "light" },
+          },
+          [
+            _c("img", {
+              staticClass: "img-fluid",
+              attrs: {
+                src: "https://mdbootstrap.com/img/new/standard/nature/002.jpg",
+              },
+            }),
             _vm._v(" "),
-            _c("div", { staticClass: "col-6 " }, [
-              _c("a", { attrs: { href: "#" } }, [
-                _c("i", {
-                  staticClass: "far fa-thumbs-down  fa-pull-right m-2",
-                }),
-              ]),
-              _vm._v(" "),
-              _c("span", { staticClass: " fa-pull-right m-1" }, [_vm._v("1")]),
-              _vm._v(" "),
-              _c("a", { attrs: { href: "#" } }, [
-                _c("i", { staticClass: "far fa-thumbs-up  fa-pull-right m-2" }),
-              ]),
+            _c("a", { attrs: { href: "#!" } }, [
+              _c("div", {
+                staticClass: "mask",
+                staticStyle: {
+                  "background-color": "rgba(251, 251, 251, 0.15)",
+                },
+              }),
             ]),
+          ]
+        ),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-8 mb-4" }, [
+        _c("h5", [_vm._v("Very long post title")]),
+        _vm._v(" "),
+        _c("p", [
+          _vm._v(
+            "\n                Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus ratione\n                necessitatibus itaque error alias repellendus nemo reiciendis aperiam quisquam\n                minus ipsam reprehenderit commodi ducimus, in dicta aliquam eveniet dignissimos\n                magni.\n            "
+          ),
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          { staticClass: "btn btn-primary", attrs: { type: "button" } },
+          [_vm._v("Read")]
+        ),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-4 mb-4" }, [
+        _c(
+          "div",
+          {
+            staticClass:
+              "bg-image hover-overlay shadow-1-strong rounded ripple",
+            attrs: { "data-mdb-ripple-color": "light" },
+          },
+          [
+            _c("img", {
+              staticClass: "img-fluid",
+              attrs: {
+                src: "https://mdbootstrap.com/img/new/standard/nature/023.jpg",
+              },
+            }),
             _vm._v(" "),
-            _c("div", { staticClass: "col-3" }, [
-              _c("a", { attrs: { href: "#" } }, [
-                _c("i", { staticClass: "far fa-bookmark fa-pull-right m-2" }),
-              ]),
-              _vm._v(" "),
-              _c("a", { attrs: { href: "#" } }, [
-                _c("i", { staticClass: "far fa-comment fa-pull-right m-2" }),
-              ]),
+            _c("a", { attrs: { href: "#!" } }, [
+              _c("div", {
+                staticClass: "mask",
+                staticStyle: {
+                  "background-color": "rgba(251, 251, 251, 0.15)",
+                },
+              }),
             ]),
-          ]),
-        ]),
+          ]
+        ),
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-4 mb-4" }, [
-          _c(
-            "div",
-            {
-              staticClass:
-                "bg-image hover-overlay shadow-1-strong rounded ripple",
-              attrs: { "data-mdb-ripple-color": "light" },
-            },
-            [
-              _c("img", {
-                staticClass: "img-fluid",
-                attrs: {
-                  src: "https://mdbootstrap.com/img/new/standard/nature/002.jpg",
-                },
-              }),
-              _vm._v(" "),
-              _c("a", { attrs: { href: "#!" } }, [
-                _c("div", {
-                  staticClass: "mask",
-                  staticStyle: {
-                    "background-color": "rgba(251, 251, 251, 0.15)",
-                  },
-                }),
-              ]),
-            ]
+      _c("div", { staticClass: "col-md-8 mb-4" }, [
+        _c("h5", [_vm._v("Very long post title")]),
+        _vm._v(" "),
+        _c("p", [
+          _vm._v(
+            "\n                Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus ratione\n                necessitatibus itaque error alias repellendus nemo reiciendis aperiam quisquam\n                minus ipsam reprehenderit commodi ducimus, in dicta aliquam eveniet dignissimos\n                magni.\n            "
           ),
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "col-md-8 mb-4" }, [
-          _c("h5", [_vm._v("Very long post title")]),
-          _vm._v(" "),
-          _c("p", [
-            _vm._v(
-              "\n                Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus ratione\n                necessitatibus itaque error alias repellendus nemo reiciendis aperiam quisquam\n                minus ipsam reprehenderit commodi ducimus, in dicta aliquam eveniet dignissimos\n                magni.\n            "
-            ),
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            { staticClass: "btn btn-primary", attrs: { type: "button" } },
-            [_vm._v("Read")]
-          ),
-        ]),
+        _c(
+          "button",
+          { staticClass: "btn btn-primary", attrs: { type: "button" } },
+          [_vm._v("Read")]
+        ),
       ]),
-      _vm._v(" "),
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-4 mb-4" }, [
-          _c(
-            "div",
-            {
-              staticClass:
-                "bg-image hover-overlay shadow-1-strong rounded ripple",
-              attrs: { "data-mdb-ripple-color": "light" },
-            },
-            [
-              _c("img", {
-                staticClass: "img-fluid",
-                attrs: {
-                  src: "https://mdbootstrap.com/img/new/standard/nature/023.jpg",
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "row" }, [
+      _c("div", { staticClass: "col-md-4 mb-4" }, [
+        _c(
+          "div",
+          {
+            staticClass:
+              "bg-image hover-overlay shadow-1-strong rounded ripple",
+            attrs: { "data-mdb-ripple-color": "light" },
+          },
+          [
+            _c("img", {
+              staticClass: "img-fluid",
+              attrs: {
+                src: "https://mdbootstrap.com/img/new/standard/nature/111.jpg",
+              },
+            }),
+            _vm._v(" "),
+            _c("a", { attrs: { href: "#!" } }, [
+              _c("div", {
+                staticClass: "mask",
+                staticStyle: {
+                  "background-color": "rgba(251, 251, 251, 0.15)",
                 },
               }),
-              _vm._v(" "),
-              _c("a", { attrs: { href: "#!" } }, [
-                _c("div", {
-                  staticClass: "mask",
-                  staticStyle: {
-                    "background-color": "rgba(251, 251, 251, 0.15)",
-                  },
-                }),
-              ]),
-            ]
+            ]),
+          ]
+        ),
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-md-8 mb-4" }, [
+        _c("h5", [_vm._v("Very long post title")]),
+        _vm._v(" "),
+        _c("p", [
+          _vm._v(
+            "\n                Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus ratione\n                necessitatibus itaque error alias repellendus nemo reiciendis aperiam quisquam\n                minus ipsam reprehenderit commodi ducimus, in dicta aliquam eveniet dignissimos\n                magni.\n            "
           ),
         ]),
         _vm._v(" "),
-        _c("div", { staticClass: "col-md-8 mb-4" }, [
-          _c("h5", [_vm._v("Very long post title")]),
-          _vm._v(" "),
-          _c("p", [
-            _vm._v(
-              "\n                Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus ratione\n                necessitatibus itaque error alias repellendus nemo reiciendis aperiam quisquam\n                minus ipsam reprehenderit commodi ducimus, in dicta aliquam eveniet dignissimos\n                magni.\n            "
-            ),
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            { staticClass: "btn btn-primary", attrs: { type: "button" } },
-            [_vm._v("Read")]
-          ),
-        ]),
+        _c(
+          "button",
+          { staticClass: "btn btn-primary", attrs: { type: "button" } },
+          [_vm._v("Read")]
+        ),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("a", { attrs: { href: "#!" } }, [
+      _c("div", {
+        staticClass: "mask",
+        staticStyle: { "background-color": "rgba(251, 251, 251, 0.15)" },
+      }),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-6 " }, [
+      _c("a", { attrs: { href: "#" } }, [
+        _c("i", { staticClass: "far fa-thumbs-down  fa-pull-right m-2" }),
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "row" }, [
-        _c("div", { staticClass: "col-md-4 mb-4" }, [
-          _c(
-            "div",
-            {
-              staticClass:
-                "bg-image hover-overlay shadow-1-strong rounded ripple",
-              attrs: { "data-mdb-ripple-color": "light" },
-            },
-            [
-              _c("img", {
-                staticClass: "img-fluid",
-                attrs: {
-                  src: "https://mdbootstrap.com/img/new/standard/nature/111.jpg",
-                },
-              }),
-              _vm._v(" "),
-              _c("a", { attrs: { href: "#!" } }, [
-                _c("div", {
-                  staticClass: "mask",
-                  staticStyle: {
-                    "background-color": "rgba(251, 251, 251, 0.15)",
-                  },
-                }),
-              ]),
-            ]
-          ),
-        ]),
-        _vm._v(" "),
-        _c("div", { staticClass: "col-md-8 mb-4" }, [
-          _c("h5", [_vm._v("Very long post title")]),
-          _vm._v(" "),
-          _c("p", [
-            _vm._v(
-              "\n                Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatibus ratione\n                necessitatibus itaque error alias repellendus nemo reiciendis aperiam quisquam\n                minus ipsam reprehenderit commodi ducimus, in dicta aliquam eveniet dignissimos\n                magni.\n            "
-            ),
-          ]),
-          _vm._v(" "),
-          _c(
-            "button",
-            { staticClass: "btn btn-primary", attrs: { type: "button" } },
-            [_vm._v("Read")]
-          ),
-        ]),
-      ]),
+      _c("span", { staticClass: " fa-pull-right m-1" }, [_vm._v("1")]),
       _vm._v(" "),
-      _c("nav", { staticClass: "my-4 mt-5", attrs: { "aria-label": "..." } }, [
+      _c("a", { attrs: { href: "#" } }, [
+        _c("i", { staticClass: "far fa-thumbs-up  fa-pull-right m-2" }),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("a", { attrs: { href: "#" } }, [
+      _c("i", { staticClass: "far fa-comment fa-pull-right m-2" }),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "nav",
+      { staticClass: "my-4 mt-5", attrs: { "aria-label": "..." } },
+      [
         _c(
           "ul",
           {
@@ -58782,8 +59023,8 @@ var staticRenderFns = [
             ]),
           ]
         ),
-      ]),
-    ])
+      ]
+    )
   },
 ]
 render._withStripped = true
@@ -58808,131 +59049,63 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _vm._m(0)
+  return _c("div", { staticClass: "col-md-3 mb-4" }, [
+    _c("section", { staticClass: "sticky-top", staticStyle: { top: "80px" } }, [
+      _c("section", { staticClass: "text-center border-bottom pb-4 mb-4" }, [
+        _c("h3", [_vm._v("Category")]),
+        _vm._v(" "),
+        _c(
+          "ul",
+          { staticClass: "nav flex-column" },
+          _vm._l(_vm.categories, function (category) {
+            return _c(
+              "li",
+              { staticClass: "nav-item" },
+              [
+                _c(
+                  "router-link",
+                  {
+                    staticClass: "nav-link",
+                    attrs: { to: { path: "/category/" + category.id } },
+                  },
+                  [_vm._v(_vm._s(category.title))]
+                ),
+              ],
+              1
+            )
+          }),
+          0
+        ),
+      ]),
+      _vm._v(" "),
+      _c("section", { staticClass: "text-center" }, [
+        _c("h5", { staticClass: "mb-4" }, [_vm._v("Tags")]),
+        _vm._v(" "),
+        _c(
+          "div",
+          _vm._l(_vm.tags, function (tag) {
+            return _c(
+              "span",
+              [
+                _c(
+                  "router-link",
+                  {
+                    staticClass: "btn btn-light btn-sm ripple-surface m-1",
+                    attrs: { type: "button", to: { path: "/tag/" + tag.id } },
+                  },
+                  [_vm._v(_vm._s(tag.title))]
+                ),
+              ],
+              1
+            )
+          }),
+          0
+        ),
+      ]),
+    ]),
+  ])
 }
-var staticRenderFns = [
-  function () {
-    var _vm = this
-    var _h = _vm.$createElement
-    var _c = _vm._self._c || _h
-    return _c("div", { staticClass: "col-md-3 mb-4" }, [
-      _c(
-        "section",
-        { staticClass: "sticky-top", staticStyle: { top: "80px" } },
-        [
-          _c(
-            "section",
-            { staticClass: "text-center border-bottom pb-4 mb-4" },
-            [
-              _c("h3", [_vm._v("Category")]),
-              _vm._v(" "),
-              _c("ul", { staticClass: "nav flex-column" }, [
-                _c("li", { staticClass: "nav-item" }, [
-                  _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
-                    _vm._v("Category name"),
-                  ]),
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "nav-item" }, [
-                  _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
-                    _vm._v("Category name"),
-                  ]),
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "nav-item" }, [
-                  _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
-                    _vm._v("Category name"),
-                  ]),
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "nav-item" }, [
-                  _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
-                    _vm._v("Category name"),
-                  ]),
-                ]),
-                _vm._v(" "),
-                _c("li", { staticClass: "nav-item" }, [
-                  _c("a", { staticClass: "nav-link", attrs: { href: "" } }, [
-                    _vm._v("Category name"),
-                  ]),
-                ]),
-              ]),
-            ]
-          ),
-          _vm._v(" "),
-          _c("section", { staticClass: "text-center" }, [
-            _c("h5", { staticClass: "mb-4" }, [_vm._v("Tags")]),
-            _vm._v(" "),
-            _c("div", [
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-light btn-sm ripple-surface m-1",
-                  attrs: { type: "button" },
-                },
-                [_vm._v("Tag name")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-light btn-sm ripple-surface m-1",
-                  attrs: { type: "button" },
-                },
-                [_vm._v("Tag name")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-light btn-sm ripple-surface m-1",
-                  attrs: { type: "button" },
-                },
-                [_vm._v("Tag name")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-light btn-sm ripple-surface m-1",
-                  attrs: { type: "button" },
-                },
-                [_vm._v("Tag name")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-light btn-sm ripple-surface m-1",
-                  attrs: { type: "button" },
-                },
-                [_vm._v("Tag name")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-light btn-sm ripple-surface m-1",
-                  attrs: { type: "button" },
-                },
-                [_vm._v("Tag name")]
-              ),
-              _vm._v(" "),
-              _c(
-                "button",
-                {
-                  staticClass: "btn btn-light btn-sm ripple-surface m-1",
-                  attrs: { type: "button" },
-                },
-                [_vm._v("Tag name")]
-              ),
-            ]),
-          ]),
-        ]
-      ),
-    ])
-  },
-]
+var staticRenderFns = []
 render._withStripped = true
 
 

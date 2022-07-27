@@ -11,12 +11,89 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
+/* harmony import */ var _sidbar_SidebarComponent__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sidbar/SidebarComponent */ "./resources/js/components/sidbar/SidebarComponent.vue");
 //
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: "TagComponent"
+  name: "TagComponent",
+  data: function data() {
+    return {
+      posts: null
+    };
+  },
+  mounted: function mounted() {
+    this.getPosts();
+  },
+  methods: {
+    getPosts: function getPosts() {
+      var _this = this;
+
+      //console.log(this.$route.params.id)
+      axios.get("/api/tag/".concat(this.$route.params.id)).then(function (res) {
+        //console.log(res.data.data)
+        _this.posts = res.data.data; //console.log(this.posts);
+      });
+    }
+  },
+  components: {
+    SidebarComponent: _sidbar_SidebarComponent__WEBPACK_IMPORTED_MODULE_0__["default"]
+  }
 });
 
 /***/ }),
@@ -105,9 +182,172 @@ var render = function () {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", [_vm._v("Tag component")])
+  return _c(
+    "section",
+    [
+      _vm._l(_vm.posts, function (post) {
+        return _c("div", { staticClass: "row" }, [
+          _c("div", { staticClass: "col-md-4 mb-4" }, [
+            _c(
+              "div",
+              {
+                staticClass:
+                  "bg-image hover-overlay shadow-1-strong rounded ripple",
+                attrs: { "data-mdb-ripple-color": "light" },
+              },
+              [
+                _c("img", {
+                  staticClass: "img-fluid",
+                  attrs: { src: post.preview_image },
+                }),
+                _vm._v(" "),
+                _vm._m(0, true),
+              ]
+            ),
+          ]),
+          _vm._v(" "),
+          _c("div", { staticClass: "col-md-8 mb-4" }, [
+            _c("h5", [_vm._v(_vm._s(post.title))]),
+            _vm._v(" "),
+            _c("p", { domProps: { innerHTML: _vm._s(post.excerpt) } }),
+            _vm._v(" "),
+            _c("div", { staticClass: "row" }, [
+              _c(
+                "div",
+                { staticClass: "col-3" },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      staticClass: "btn btn-primary",
+                      attrs: {
+                        to: { path: "/post/" + post.id },
+                        type: "button",
+                      },
+                    },
+                    [_vm._v("Read")]
+                  ),
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _vm._m(1, true),
+              _vm._v(" "),
+              _vm._m(2, true),
+            ]),
+          ]),
+        ])
+      }),
+      _vm._v(" "),
+      _vm._m(3),
+    ],
+    2
+  )
 }
-var staticRenderFns = []
+var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("a", { attrs: { href: "#!" } }, [
+      _c("div", {
+        staticClass: "mask",
+        staticStyle: { "background-color": "rgba(251, 251, 251, 0.15)" },
+      }),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-6 " }, [
+      _c("a", { attrs: { href: "#" } }, [
+        _c("i", { staticClass: "far fa-thumbs-down  fa-pull-right m-2" }),
+      ]),
+      _vm._v(" "),
+      _c("span", { staticClass: " fa-pull-right m-1" }, [_vm._v("1")]),
+      _vm._v(" "),
+      _c("a", { attrs: { href: "#" } }, [
+        _c("i", { staticClass: "far fa-thumbs-up  fa-pull-right m-2" }),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "col-3" }, [
+      _c("a", { attrs: { href: "#" } }, [
+        _c("i", { staticClass: "far fa-bookmark fa-pull-right m-2" }),
+      ]),
+      _vm._v(" "),
+      _c("a", { attrs: { href: "#" } }, [
+        _c("i", { staticClass: "far fa-comment fa-pull-right m-2" }),
+      ]),
+    ])
+  },
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "nav",
+      { staticClass: "my-4 mt-5", attrs: { "aria-label": "..." } },
+      [
+        _c(
+          "ul",
+          {
+            staticClass: "pagination pagination-circle justify-content-center",
+          },
+          [
+            _c("li", { staticClass: "page-item" }, [
+              _c(
+                "a",
+                {
+                  staticClass: "page-link",
+                  attrs: { href: "#", tabindex: "-1", "aria-disabled": "true" },
+                },
+                [_vm._v("Previous")]
+              ),
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("1"),
+              ]),
+            ]),
+            _vm._v(" "),
+            _c(
+              "li",
+              {
+                staticClass: "page-item active",
+                attrs: { "aria-current": "page" },
+              },
+              [
+                _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                  _vm._v("2 "),
+                  _c("span", { staticClass: "sr-only" }, [_vm._v("(current)")]),
+                ]),
+              ]
+            ),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("3"),
+              ]),
+            ]),
+            _vm._v(" "),
+            _c("li", { staticClass: "page-item" }, [
+              _c("a", { staticClass: "page-link", attrs: { href: "#" } }, [
+                _vm._v("Next"),
+              ]),
+            ]),
+          ]
+        ),
+      ]
+    )
+  },
+]
 render._withStripped = true
 
 

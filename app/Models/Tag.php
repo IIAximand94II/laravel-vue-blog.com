@@ -11,4 +11,8 @@ class Tag extends Model
     use HasFactory,SoftDeletes;
     protected $guarded = false;
     protected $table = 'tags';
+
+    public function posts(){
+        return $this->belongsToMany(Post::class, 'post_tags', 'tag_id', 'post_id');
+    }
 }

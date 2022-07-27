@@ -18,16 +18,16 @@
                             <router-link class="nav-link" :to="{name:'main.index'}">Home</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" :to="{name:'user.login'}">Login</router-link>
+                            <router-link v-if="!this.$parent.token" class="nav-link" :to="{name:'user.login'}">Login</router-link>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" :to="{name:'user.registration'}">Registration</router-link>
+                            <router-link v-if="!this.$parent.token" class="nav-link" :to="{name:'user.registration'}">Registration</router-link>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" @click.prevent="logout" href="#">Logout</a>
+                            <a class="nav-link" v-if="this.$parent.token" @click.prevent="logout" href="#">Logout</a>
                         </li>
                         <li class="nav-item">
-                            <router-link class="nav-link" :to="{name:'user.personal'}">Personal</router-link>
+                            <router-link v-if="this.$parent.token" class="nav-link" :to="{name:'user.personal'}">Personal</router-link>
                         </li>
                     </ul>
 
@@ -71,6 +71,10 @@
 export default {
     name: "HeaderComponent",
 
+    mounted(){
+        this.log()
+    },
+
     methods:{
         logout(){
             axios.post('/logout')
@@ -79,7 +83,13 @@ export default {
                 this.$router.push({name:'main.index'})
                 console.log('logout')
             })
+        },
+
+        log(){
+            console.log(this.$parent.token)
         }
+
+
     }
 }
 </script>

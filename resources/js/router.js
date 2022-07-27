@@ -12,14 +12,14 @@ const router = new VueRouter({
             name: 'main.index'
         },
         {
-            path:'/blog/category',
+            path:'/category/:id',
             component:() => import('./components/main/CategoryComponent'),
-            name: 'main.category'
+            name: 'category.index'
         },
         {
-            path:'/blog/tag',
+            path:'/tag/:id',
             component:() => import('./components/main/TagComponent'),
-            name: 'main.tag'
+            name: 'tag.index'
         },
         {
             path:'/post/show',
@@ -52,11 +52,30 @@ const router = new VueRouter({
             name: 'post.edit'
         },
         {
-            path:'/post/show',
+            path:'/post/:id',
             component:() => import('./components/post/ShowComponent'),
             name: 'post.show'
         },
     ]
 })
+
+router.beforeEach((to, from, next) => {
+    const token = localStorage.getItem('x-csrf-token')
+
+    if(!token){
+        if(to.name==='user.login' || to.name==='user.registration'){
+            return next()
+        }else{
+            return next({name:'user.login'})
+        }
+    }else{
+        if(to.name==='user.login' || to.name==='user.registration' && token){
+            return next({name:'user.personal'})
+        }
+    }
+
+    next()
+})
+
 
 export default router

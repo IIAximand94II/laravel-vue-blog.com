@@ -18,8 +18,8 @@
                 </div>
 
                 <div class="form-outline mb-4">
-                    <label class="form-label">Catrgoty</label>
-                    <v-select placeholder="Select category" label="name" v-model="categories.value" :options="categories"></v-select>
+                    <label class="form-label">Category</label>
+                    <v-select placeholder="Select category" v-model="categories.value" label="title" :options="categories"></v-select>
                 </div>
 
                 <div class="form-outline mb-4">
@@ -29,7 +29,7 @@
 
                 <div class="form-outline mb-4">
                     <label class="form-label">Tags</label>
-                    <v-select placeholder="Select tag" v-model="tags.value" label="name" multiple :options="tags"></v-select>
+                    <v-select placeholder="Select tag" v-model="tags.value"  label="title" multiple :options="tags"></v-select>
                 </div>
 
                 <!-- 2 column grid layout for inline styling -->
@@ -54,19 +54,8 @@ export default {
             title: null,
             content: null,
             dropzone:null,
-            categories: [
-                {name: 'Category 1' , value: 1},
-                {name: 'Category 2' , value: 2},
-                {name: 'Category 3' , value: 3},
-                {name: 'Category 4' , value: 4},
-            ],
-
-            tags: [
-                {name: 'Tag 1' , value: 1},
-                {name: 'Tag 2' , value: 2},
-                {name: 'Tag 3' , value: 3},
-                {name: 'Tag 4' , value: 4},
-            ]
+            categories: [],
+            tags: [],
         }
     },
 
@@ -77,6 +66,8 @@ export default {
             autoProcessQueue: false,
             addRemoveLinks: true,
         })
+        this.getCategories()
+        this.getTags()
     },
 
     methods:{
@@ -89,9 +80,9 @@ export default {
             })
             let tags_id = this.tags.value
             tags_id.forEach(tag => {
-                data.append('tags[]', tag.value)
+                data.append('tags[]', tag.id)
             })
-            data.append('category_id', this.categories.value.value)
+            data.append('category_id', this.categories.value.id)
             data.append('title', this.title)
             data.append('content', this.content)
 
@@ -114,6 +105,22 @@ export default {
                 .catch(err => {
                     console.log(err);
                 });
+        },
+
+        getCategories(){
+            axios.get('/api/category/all')
+            .then(res => {
+                this.categories = res.data.data
+                //console.log(this.categories)
+            })
+        },
+
+        getTags(){
+            axios.get('/api/tag/all')
+                .then(res => {
+                    this.tags = res.data.data
+                    //console.log(this.tags)
+                })
         },
     }
 }

@@ -19,6 +19,7 @@ class PostResource extends JsonResource
             'title' => $this->title,
             'image' => $this->image,
             'preview_image' => $this->preview_image,
+            'excerpt' => substr($this->content, 0, 245).'...',
             'category' => $this->category,
             'content' => $this->content,
             'author' => $this->authorInfo,
